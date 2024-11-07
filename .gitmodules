@@ -1,0 +1,6 @@
+[submodule "back"]
+	path = back
+	url = https://github.com/IvanitiX/DANAPickupPointsBack
+[submodule "front"]
+	path = front
+	url = https://github.com/IvanitiX/DANAPickupPointsFront
