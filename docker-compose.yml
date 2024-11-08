@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  python-app:
+    build:
+      context: ./back  # Path to the Python app
+      dockerfile: ./compose/Dockerfile  # Specify the production Dockerfile
+    ports:
+      - "8000:8000"  # Map host port 8000 to container port 8000
+    environment:
+      - PYTHONUNBUFFERED=1  # Set environment variable for Python
+      - DB_NAME=${DB_NAME}  # Use the DB_NAME from .env
+      - DB_USER=${DB_USER}  # Use the DB_USER from .env
+      - DB_PASSWORD=${DB_PASSWORD}  # Use the DB_PASSWORD from .env
+      - DB_HOST=db  # Use the DB_HOST from .env
+      - DEBUG=0  # Disable debug mode in production
+    depends_on:
+      - db  # Ensure the database service is started before the app
+
+  vue-app:
+    build:
+      context: ./front  # Path to the Vue app
+      dockerfile: ./compose/Dockerfile  # Specify the production Dockerfile
+    ports:
+      - "8080:80"  # Map host port 8080 to container port 80 (Nginx or similar for production)
+    environment:
+      - NODE_ENV=production  # Set environment variable for production
+      - VITE_APP_API_URL=${VUE_PROD_APP_URL}  # Set production API URL
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
